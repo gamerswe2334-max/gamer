@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CS Web</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="menu">
+  <div class="logo">CS:WEB</div>
+  <div class="logo-sub">Командний Браузерний Шутер 3D</div>
+  <div class="msec">
+    <h3>Команда (раунди 1-3)</h3>
+    <div class="team-btns">
+      <button class="team-btn ct sel" data-t="ct"><div class="tbi">🛡</div><div class="tbn">CT</div><div class="tbd">Counter-Terrorist</div><div class="tchk">✓</div></button>
+      <button class="team-btn t" data-t="t"><div class="tbi">💣</div><div class="tbn">T</div><div class="tbd">Terrorist</div><div class="tchk">✓</div></button>
+    </div>
+  </div>
+  <div class="msec"><h3>Карта</h3><div class="map-grid" id="map-grid"></div></div>
+  <div class="difficulty">
+    <button class="dbtn sel" data-d="0">Легко</button>
+    <button class="dbtn" data-d="1">Середньо</button>
+    <button class="dbtn" data-d="2">Важко</button>
+  </div>
+  <button class="play-btn" id="play-btn">▶ ГРАТИ</button>
+  <div class="ctrl">
+    <span>WASD</span> рух · <span>ЛКМ</span> вогонь · <span>ПКМ</span> (утримати) приціл AWP · <span>R</span> перезарядка · <span>G</span> скинути зброю · <span>E</span> підняти<br>
+    <span>5</span> frag · <span>6</span> дим · утримуй <span>ЛКМ</span> щоб кинути · <span>7</span> бомба (T)<br>
+    <span>B</span> магазин · <span>E</span> плентити/знешкодити · <span>SHIFT</span> присісти · <span>ESC</span> пауза<br>
+    T: плентуй бомбу на A/B · CT: знешкодь · 6 раундів · Р.1 тільки пістолети
+  </div>
+</div>
+<div id="pause"><h2>⏸ ПАУЗА</h2><p>ESC — продовжити</p><button class="pb" id="resume-btn">▶ Продовжити</button><button class="pb" id="menu-btn">⌂ Меню</button></div>
+<div id="hud">
+  <div id="dmg"></div><div id="chroma"></div><div id="vign"></div><div id="smoke-ov"></div><div id="flash-ov"></div><div id="ammo-warn"></div><div id="buy-hint">B — Магазин</div>
+  <div id="xhair"><svg width="32" height="32" viewBox="0 0 32 32"><line x1="16" y1="1" x2="16" y2="12" stroke="rgba(255,255,255,.9)" stroke-width="1.5"/><line x1="16" y1="20" x2="16" y2="31" stroke="rgba(255,255,255,.9)" stroke-width="1.5"/><line x1="1" y1="16" x2="12" y2="16" stroke="rgba(255,255,255,.9)" stroke-width="1.5"/><line x1="20" y1="16" x2="31" y2="16" stroke="rgba(255,255,255,.9)" stroke-width="1.5"/><circle cx="16" cy="16" r="1.2" fill="rgba(255,255,255,.8)"/></svg></div>
+  <div id="hitmark"><svg width="28" height="28" viewBox="0 0 28 28"><line x1="3" y1="3" x2="10" y2="10" stroke="#FF4422" stroke-width="2.8" stroke-linecap="round"/><line x1="25" y1="3" x2="18" y2="10" stroke="#FF4422" stroke-width="2.8" stroke-linecap="round"/><line x1="3" y1="25" x2="10" y2="18" stroke="#FF4422" stroke-width="2.8" stroke-linecap="round"/><line x1="25" y1="25" x2="18" y2="18" stroke="#FF4422" stroke-width="2.8" stroke-linecap="round"/></svg></div>
+  <div id="scope"><div id="scope-glass"></div><div id="scope-inner"><svg id="scope-svg" xmlns="http://www.w3.org/2000/svg"></svg><canvas id="scope-dust"></canvas></div></div>
+  <div id="round-bar">
+    <div class="rteam"><span id="rct-l">CT</span><span id="rct">0</span></div>
+    <span id="rsep">:</span>
+    <div class="rteam"><span id="rt">0</span><span id="rt-l">T</span></div>
+    <div id="timer-wrap"><div id="round-timer">2:00</div><div id="round-num">РАУНД 1/6</div></div>
+    <div id="money-hud">$800</div>
+  </div>
+  <div id="tbadge" class="ct">CT</div>
+  <div id="kfeed"></div>
+  <div id="mmap"><canvas id="mmc" width="148" height="148"></canvas><div id="mmap-lbl">MINIMAP</div></div>
+  <div id="ghud">
+    <div class="gi has" id="gi-f"><div class="gi-ico">💥</div><div class="gi-cnt" id="gc-f">0</div><div class="gi-nm">FRAG</div></div>
+    <div class="gi" id="gi-s"><div class="gi-ico">💨</div><div class="gi-cnt" id="gc-s">0</div><div class="gi-nm">SMOKE</div></div>
+    <div class="gi" id="gi-kit" style="display:none"><div class="gi-ico">✂</div><div class="gi-nm">КІТ</div></div>
+    <div class="gi" id="gi-b" style="display:none"><div class="gi-ico">💣</div><div class="gi-cnt">C4</div><div class="gi-nm">BOMB</div></div>
+  </div>
+  <div id="nade-charge"><div id="nade-charge-fill"></div></div>
+  <div id="action-bar"><div id="action-label"></div><div id="action-progress"><div id="action-fill"></div></div></div>
+  <div id="bomb-hud"><div id="bomb-status">💣 БОМБА</div><div id="bomb-timer-bar"><div id="bomb-timer-fill"></div></div></div>
+  <div id="wpns"></div>
+  <div id="bot-bar">
+    <div class="hg"><span class="hico">❤</span><span class="hnum" id="hp">100</span></div>
+    <div class="hg"><span class="hico">🛡</span><span class="hnum" id="arm">0</span></div>
+    <div style="flex:1"></div>
+    <div class="ammo-a"><div id="wn">Glock-18</div><div><span id="ac">20</span><span id="ar"> / 120</span></div><div id="rld-bar"><div id="rld-fill"></div></div></div>
+  </div>
+  <!-- BUY MENU -->
+  <div id="buy-menu">
+    <div class="buy-panel">
+      <div class="buy-header">
+        <div class="buy-title">⚙ МАГАЗИН</div>
+        <div class="buy-money" id="bm-money">$800</div>
+        <div class="buy-timer" id="bm-timer">Час: 20с</div>
+      </div>
+      <div class="buy-cols" id="buy-cols"></div>
+      <div class="buy-footer">КЛІКНИ щоб купити · ESC / B — закрити</div>
+    </div>
+  </div>
+  <div id="dead-ov"><h2>☠ ВИ ЗАГИНУЛИ</h2><div class="dtimer" id="dtimer">Відродження через 4...</div></div>
+  <div id="round-end"><div id="re-title"></div><div id="re-sub"></div><div id="re-stat"></div><div id="re-money"></div><div id="re-next"></div></div>
+  <div id="halftime"><div id="ht-title">ПЕРЕРВА</div><div id="ht-sub">ЗМІНА СТОРІН</div><div id="ht-info"></div><div id="ht-next"></div></div>
+</div>
+<!-- Multiplayer Lobby -->
+<div id="mp-lobby" style="position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:14px;font-family:Courier New,monospace;color:#aaa">
+  <div style="font-size:22px;color:#FF6600;letter-spacing:.3em">МУЛЬТИПЛЕЄР</div>
+  <div style="font-size:11px;color:#555">Підключитись до сервера або грати з ботами</div>
+  <input id="mp-name" placeholder="Ваш нікнейм" style="background:#111;border:1px solid #333;color:#eee;padding:8px 14px;font-family:inherit;font-size:12px;width:200px;text-align:center">
+  <input id="mp-room" placeholder="Кімната (default: main)" style="background:#111;border:1px solid #333;color:#eee;padding:8px 14px;font-family:inherit;font-size:12px;width:200px;text-align:center">
+  <input id="mp-server" placeholder="Сервер: http://localhost:3000" style="background:#111;border:1px solid #333;color:#eee;padding:8px 14px;font-family:inherit;font-size:12px;width:280px;text-align:center">
+  <div style="display:flex;gap:12px">
+    <button onclick="joinMP('ct')" style="background:#0d1a2a;border:1px solid #4488FF;color:#4488FF;padding:10px 24px;font-family:inherit;cursor:pointer;letter-spacing:.2em">ПРИЄДНАТИСЬ CT</button>
+    <button onclick="joinMP('t')" style="background:#1a0d04;border:1px solid #FF8844;color:#FF8844;padding:10px 24px;font-family:inherit;cursor:pointer;letter-spacing:.2em">ПРИЄДНАТИСЬ T</button>
+  </div>
+  <div id="mp-status" style="font-size:11px;color:#888;min-height:16px"></div>
+  <button onclick="document.getElementById('mp-lobby').style.display='none'" style="background:transparent;border:1px solid #333;color:#555;padding:6px 18px;font-family:inherit;cursor:pointer;font-size:10px">← НАЗАД (БОТИ)</button>
+</div>
+<!-- Chat overlay in-game -->
+<div id="chat-box" style="position:absolute;bottom:180px;left:14px;width:280px;pointer-events:none;z-index:50">
+  <div id="chat-msgs" style="font-family:Courier New,monospace;font-size:10px;display:flex;flex-direction:column;gap:2px"></div>
+</div>
+<div id="chat-input-wrap" style="position:absolute;bottom:160px;left:14px;display:none;z-index:55">
+  <input id="chat-input" placeholder="Повідомлення..." style="background:rgba(0,0,0,.8);border:1px solid #444;color:#eee;padding:5px 10px;font-family:Courier New,monospace;font-size:11px;width:240px">
+</div>
+<!-- Scoreboard (Tab) -->
+<div id="scoreboard" style="position:absolute;inset:0;background:rgba(0,0,0,.85);display:none;z-index:70;align-items:flex-start;justify-content:center;padding-top:60px">
+  <div style="font-family:Courier New,monospace;width:500px">
+    <div style="font-size:14px;color:#FF6600;letter-spacing:.3em;text-align:center;margin-bottom:16px">РАХУНОК</div>
+    <div id="sb-ct" style="margin-bottom:12px"></div>
+    <div id="sb-t"></div>
+  </div>
+</div>
+
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Socket.IO client -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <!-- Game logic -->
+  <script src="client.js"></script>
+</body>
+</html>
